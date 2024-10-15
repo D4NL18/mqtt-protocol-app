@@ -39,17 +39,7 @@ export default function Index() {
         height: "100%"
       }}
     >
-      <View>
-        <Text
-          style={{
-            textAlign: "center",
-            color: "white",
-            fontSize: 64,
-            fontWeight: "bold",
-          }}
-        >MQTT
-        </Text>
-      </View>
+
 
       <View
         style={{
@@ -63,6 +53,17 @@ export default function Index() {
           size={128}
           color="white"
         />
+      </View>
+      <View>
+        <Text
+          style={{
+            textAlign: "center",
+            color: "white",
+            fontSize: 64,
+            fontWeight: "bold",
+          }}
+        >MQTT
+        </Text>
       </View>
       <View
         style={{
