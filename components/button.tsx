@@ -10,7 +10,7 @@ interface ButtonProps {
     onPress: () => void;
 }
 
-export function Button({ title, onPress }: ButtonProps) {
+export function MButton({ title, onPress }: ButtonProps) {
     const [isPressed, setIsPressed] = useState(false);
 
     const handlePress = () => {
