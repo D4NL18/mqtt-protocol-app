@@ -21,7 +21,7 @@ export function MTextInput({ text, onChangeText }: ButtonProps) {
 
 const styles = StyleSheet.create({
     container: {
-        width: "40%",
+        width: "100%",
         margin: "5%",
         borderRadius: 10,
     },

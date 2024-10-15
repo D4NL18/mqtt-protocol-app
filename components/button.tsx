@@ -22,7 +22,10 @@ export function MButton({ title, onPress }: ButtonProps) {
         <ThemedView style={styles.container}>
 
             <TouchableOpacity
-                style={styles.button}
+                style={[
+                    styles.button,
+                    { backgroundColor: !isPressed ? "#696969" : "#E8B038" }
+                ]}
                 onPress={handlePress}
                 activeOpacity={0.8}
             >
@@ -30,12 +33,14 @@ export function MButton({ title, onPress }: ButtonProps) {
                     <Ionicons
                         name="power"
                         size={18}
+                        color="white"
                     />
-                    <ThemedText type="defaultSemiBold">{title}</ThemedText>
+                    <ThemedText type="defaultSemiBold" lightColor='white'>{title}</ThemedText>
                 </View>
                 <Ionicons
-                    name={isPressed ? "bulb-outline" : "bulb"}
+                    name={!isPressed ? "bulb-outline" : "bulb"}
                     size={18}
+                    color="white"
                 />
             </TouchableOpacity>
         </ThemedView>
@@ -53,6 +58,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
+        
     },
     button: {
         display: "flex",
@@ -60,6 +66,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: 'center',
         paddingHorizontal: 24,
-        paddingVertical: 12
+        paddingVertical: 12,
+        borderRadius: 10,
     },
 });
