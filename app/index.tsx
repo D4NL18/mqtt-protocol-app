@@ -22,6 +22,7 @@ export default function Index() {
   const [leds, setLeds] = useState(["0", "0", "0", "0", "0", "0", "0", "0"]);
   const [block, setBlock] = useState(1)
 
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   useEffect(() => {
     sleep(5000).then(() => {
       // console.log(client?.options);
@@ -47,8 +48,15 @@ export default function Index() {
     }
   }
 
-  function handlePartyMode() {
-    console.log("Party Mode On")
+  async function handlePartyMode() {
+    if (!client) return;
+    for (let index = 0; index < 20; index++) {
+      publishMessage(client, "Altus2/Q0", "00000000");
+      await sleep(100)
+      publishMessage(client, "Altus2/Q0", "11111111");
+      await sleep(100)
+    }
+    publishMessage(client, "Altus2/Q0", leds.join(""));
   }
 
   return (
@@ -89,11 +97,13 @@ export default function Index() {
           justifyContent: "space-around",
         }}
       >
-        {[...Array(4).keys()].map((i) => (
+        {[...Array(4).keys()].map((i) => {
+          let x = block == 2 ? i+4 : i
+          return (
           <MButton
-            key={i}
-            isPressed={leds[i] === "1"}
-            title={`Led 0${i+1}`}
+            key={x}
+            isPressed={leds[x] === "1"}
+            title={`Led 0${x+1}`}
             onPress={() => {
               if (!client) {
                 ToastAndroid.show("ERR: no client", ToastAndroid.SHORT);
@@ -107,11 +117,11 @@ export default function Index() {
                 return;
               }
 
-              leds[i] = leds[i] === "0" ? "1" : "0";
+              leds[x] = leds[x] === "0" ? "1" : "0";
               setLeds([...leds]);
             }}
           />
-        ))}
+        )})}
         <ButtonBlock
           title="Bloco"
           onPress={handleChangeBlock}
