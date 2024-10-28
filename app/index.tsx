@@ -1,6 +1,8 @@
 import { Text, View, TextInput, Button, ToastAndroid } from "react-native";
 import { MButton } from "../components/button";
 import { ButtonConnect } from "@/components/buttonConnect";
+import { ButtonBlock } from "@/components/buttonBlock";
+import { ButtonParty } from "@/components/buttonParty";
 
 import { connect2Broker, publishMessage, disconnectBroker } from "../mqtt/mqtt";
 
@@ -18,6 +20,7 @@ export default function Index() {
   const [client, setClient] = useState<MqttClient | null>(null);
   const [address, onChangeAddress] = useState("");
   const [leds, setLeds] = useState(["0", "0", "0", "0", "0", "0", "0", "0"]);
+  const [block, setBlock] = useState(1)
 
   useEffect(() => {
     sleep(5000).then(() => {
@@ -35,6 +38,18 @@ export default function Index() {
     const message = leds.join("");
     publishMessage(client, "Altus2/Q0", message);
   }, [leds]);
+
+  function handleChangeBlock() {
+    if (block === 1) {
+      setBlock(2)
+    } else {
+      setBlock(1)
+    }
+  }
+
+  function handlePartyMode() {
+    console.log("Party Mode On")
+  }
 
   return (
     <View
@@ -74,11 +89,11 @@ export default function Index() {
           justifyContent: "space-around",
         }}
       >
-        {[...Array(8).keys()].map((i) => (
+        {[...Array(4).keys()].map((i) => (
           <MButton
             key={i}
             isPressed={leds[i] === "1"}
-            title={`Led 0${i}`}
+            title={`Led 0${i+1}`}
             onPress={() => {
               if (!client) {
                 ToastAndroid.show("ERR: no client", ToastAndroid.SHORT);
@@ -97,6 +112,14 @@ export default function Index() {
             }}
           />
         ))}
+        <ButtonBlock
+          title="Bloco"
+          onPress={handleChangeBlock}
+          block={block}
+        />
+        <ButtonParty
+          onPress={handlePartyMode}
+        />
       </View>
       <View
         style={{
