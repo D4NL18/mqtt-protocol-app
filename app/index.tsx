@@ -1,16 +1,19 @@
-import { Text, View, TextInput, Button, ToastAndroid } from "react-native";
+import { Text, View, TextInput, Button, ToastAndroid, Image } from "react-native";
 import { MButton } from "../components/button";
 import { ButtonConnect } from "@/components/buttonConnect";
 import { ButtonBlock } from "@/components/buttonBlock";
 import { ButtonParty } from "@/components/buttonParty";
 
-import { connect2Broker, publishMessage, disconnectBroker } from "../mqtt/mqtt";
+// import { connect2Broker, publishMessage, disconnectBroker } from "../mqtt/mqtt";
+import { publishMessage } from "../opc/opc";
+
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useState } from "react";
 
 import { MTextInput } from "../components/MTextInput";
 import { MqttClient } from "mqtt/*";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -22,23 +25,23 @@ export default function Index() {
   const [leds, setLeds] = useState(["0", "0", "0", "0", "0", "0", "0", "0"]);
   const [block, setBlock] = useState(1)
 
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-  useEffect(() => {
-    sleep(5000).then(() => {
-      // console.log(client?.options);
-      if (client?.connected === false) {
-        disconnectBroker(client);
-        setClient(null);
-      }
-    });
-  }, [client]);
+  // const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  // useEffect(() => {
+  //   sleep(5000).then(() => {
+  //     // console.log(client?.options);
+  //     if (client?.connected === false) {
+  //       disconnectBroker(client);
+  //       setClient(null);
+  //     }
+  //   });
+  // }, [client]);
 
-  useEffect(() => {
-    if (!client) return;
+  // useEffect(() => {
+  //   if (!client) return;
 
-    const message = leds.join("");
-    publishMessage(client, "Altus2/Q0", message);
-  }, [leds]);
+  //   const message = leds.join("");
+  //   publishMessage(client, "Altus2/Q0", message);
+  // }, [leds]);
 
   function handleChangeBlock() {
     if (block === 1) {
@@ -48,19 +51,19 @@ export default function Index() {
     }
   }
 
-  async function handlePartyMode() {
-    if (!client) return;
-    for (let index = 0; index < 20; index++) {
-      publishMessage(client, "Altus2/Q0", "00000000");
-      await sleep(100)
-      publishMessage(client, "Altus2/Q0", "11111111");
-      await sleep(100)
-    }
-    publishMessage(client, "Altus2/Q0", leds.join(""));
-  }
+  // async function handlePartyMode() {
+  //   if (!client) return;
+  //   for (let index = 0; index < 20; index++) {
+  //     publishMessage(client, "Altus2/Q0", "00000000");
+  //     await sleep(100)
+  //     publishMessage(client, "Altus2/Q0", "11111111");
+  //     await sleep(100)
+  //   }
+  //   publishMessage(client, "Altus2/Q0", leds.join(""));
+  // }
 
   return (
-    <View
+    <SafeAreaView
       style={{
         display: "flex",
         justifyContent: "space-evenly",
@@ -75,7 +78,7 @@ export default function Index() {
           alignItems: "center",
         }}
       >
-        <Ionicons name="bulb-outline" size={128} color="white" />
+        <Image source={require("../assets/images/Forninho.png")} alt="forninho"  style={{width: 128, height: 128}}/>
       </View>
       <View>
         <Text
@@ -86,7 +89,7 @@ export default function Index() {
             fontWeight: "bold",
           }}
         >
-          MQTT
+          Forninho 2
         </Text>
       </View>
       <View
@@ -116,8 +119,13 @@ export default function Index() {
                 );
                 return;
               }
-
-              leds[x] = leds[x] === "0" ? "1" : "0";
+              if(leds[x] === "0") {
+                leds[x] = "1"
+                publishMessage(x, "true", address)
+              }else {
+                leds[x] = "0"
+                publishMessage(x, "false", address)
+              }
               setLeds([...leds]);
             }}
           />
@@ -126,9 +134,6 @@ export default function Index() {
           title="Bloco"
           onPress={handleChangeBlock}
           block={block}
-        />
-        <ButtonParty
-          onPress={handlePartyMode}
         />
       </View>
       <View
@@ -140,18 +145,7 @@ export default function Index() {
         }}
       >
         <MTextInput onChangeText={onChangeAddress} text={address} />
-        <ButtonConnect
-          title="Connect"
-          onPress={() => {
-            if (!address) {
-              ToastAndroid.show("Invalid address", ToastAndroid.SHORT);
-              return;
-            }
-
-            setClient(connect2Broker(address));
-          }}
-        />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
